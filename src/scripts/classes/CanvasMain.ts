@@ -70,8 +70,6 @@ class CanvasMain {
         this.elemtRef.width = width;
         this.elemtRef.height = height;
         this.devicePixelRatio = windowPixelDeviceRatio;
-        this.elemtRef.style.width = width / windowPixelDeviceRatio + '';
-        this.elemtRef.style.height = height / windowPixelDeviceRatio + '';
     };
 
     // onClick(fn: () => void) { this.clickHook = fn };
@@ -133,7 +131,7 @@ class CanvasMain {
         };
 
         if (params.fitPixelRatio) {
-            params.radius *= 2;
+            params.radius *= this.devicePixelRatio;
         }
 
         this.canvas2D.shadowColor = '#666';

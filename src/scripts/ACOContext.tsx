@@ -4,10 +4,8 @@ import CanvasArtist from "./classes/CanvasArtist";
 import CanvasMain from "./classes/CanvasMain";
 
 export type ACODemoConfig = ACOConfig & {
-    canvasSize: {
-        width: number;
-        height: number;
-    },
+    canvasWidth: number;
+    canvasHeight: number;
     pixelRatio: number;
     animationFramesPerIteration: number;
 };
@@ -26,10 +24,8 @@ export const AcoContext = createContext<{
 }>({
     config: {
         ...defaultACOConfig,
-        canvasSize: {
-            width: 720,
-            height: 640
-        },
+        canvasWidth: 720,
+        canvasHeight: 640,
         pixelRatio: 1,
         animationFramesPerIteration: 60,
     },
@@ -42,11 +38,9 @@ export function ACOContextProvider({ children }: { children?: React.ReactNode })
 
     const [acoConfig, setACOConfig] = useState<ACODemoConfig>({
         ...defaultACOConfig,
-        canvasSize: {
-            width: 720,
-            height: 640
-        },
-        pixelRatio: 1,
+        canvasWidth: 720,
+        canvasHeight: 640,
+        pixelRatio: window.devicePixelRatio,
         animationFramesPerIteration: 60
     });
     const [acoControllers, setACOControllers] = useState<ACOControllers | null>(null);
@@ -84,9 +78,9 @@ export function ACOContextProvider({ children }: { children?: React.ReactNode })
     useEffect(() => {
         if (acoControllers) {
             acoControllers.acoArtist.resize({
-                width: acoConfig.canvasSize.width,
-                height: acoConfig.canvasSize.height
-            });
+                width: acoConfig.canvasWidth,
+                height: acoConfig.canvasHeight
+            }, acoConfig.pixelRatio);
             acoControllers.ac.config(acoConfig);
         }
     }, [acoControllers, acoConfig]);

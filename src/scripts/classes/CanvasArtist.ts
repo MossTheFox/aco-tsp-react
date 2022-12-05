@@ -44,7 +44,7 @@ class CanvasArtist {
         // 忽略小于 30px 距离的的新建点操作
         for (const city of cities) {
             let diff = Math.abs(city.x - e.x) + Math.abs(city.y - e.y);
-            if (diff < 30) {
+            if (diff < 30 * this.canvasMain.devicePixelRatio) {
                 return;
             }
         }
@@ -243,7 +243,7 @@ class CanvasArtist {
         let yOffset = (toCity.y - fromCity.y) * ratioOfTheEdge;
 
         this._drawAnt(fromCity.x + xOffset, fromCity.y + yOffset);
-        
+
     };
 
 
