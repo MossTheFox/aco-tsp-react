@@ -134,10 +134,10 @@ class CanvasMain {
             params.radius *= this.devicePixelRatio;
         }
 
-        this.canvas2D.shadowColor = '#666';
-        this.canvas2D.shadowBlur = params.fitPixelRatio ? 30 : 15;
-        this.canvas2D.shadowOffsetX = 0;
-        this.canvas2D.shadowOffsetY = 0;
+        // this.canvas2D.shadowColor = '#666';
+        // this.canvas2D.shadowBlur = params.fitPixelRatio ? 30 : 15;
+        // this.canvas2D.shadowOffsetX = 0;
+        // this.canvas2D.shadowOffsetY = 0;
 
         this.canvas2D.globalAlpha = params.alpha;
         this.canvas2D.fillStyle = params.fill;

@@ -68,15 +68,38 @@ class CanvasArtist {
     };
 
     private _drawBackground() {
-        let gradient = this.canvasMain.canvas2D.createLinearGradient(
-            0, 0, 0, this.canvasMain.size.height);
-        gradient.addColorStop(0, '#ededed');
-        gradient.addColorStop(0.4, '#ffffff');
-        gradient.addColorStop(1, '#ebebeb');
+        // let gradient = this.canvasMain.canvas2D.createLinearGradient(
+        //     0, 0, 0, this.canvasMain.size.height);
+        // gradient.addColorStop(0, '#ededed');
+        // gradient.addColorStop(0.4, '#ffffff');
+        // gradient.addColorStop(1, '#ebebeb');
 
         this.canvasMain.drawRectangle(0, 0, this.canvasMain.size.width, this.canvasMain.size.height, {
-            fill: gradient
+            // fill: gradient
+            fill: '#fff'
         });
+
+        // 画网格, 25px ?
+        // 水平
+        let horizonBreakPoints = Math.floor(this.canvasMain.size.height / 25);
+        let verticalBreakPoints = Math.floor(this.canvasMain.size.width / 25);
+
+        for (let i = 0; i <= verticalBreakPoints; i++) {
+            // draw
+            this.canvasMain.drawLine(i * 25, 0, i * 25, this.canvasMain.size.height, {
+                color: '#e5e5e5',
+                lineWidth: 1
+            });
+        }
+
+        for (let i = 0; i <= horizonBreakPoints; i++) {
+            // draw
+            this.canvasMain.drawLine(0, i * 25, this.canvasMain.size.width, i * 25, {
+                color: '#e5e5e5',
+                lineWidth: 1
+            });
+        }
+
     };
 
     private _drawEdges() {
