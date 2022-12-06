@@ -7,12 +7,12 @@ function App() {
     return <Container maxWidth="lg">
             <Box my={2}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} sm={9}>
 
                         <ACOCanvas />
                     </Grid>
 
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} sm={3}>
                         
                         <ACOControlPanel />
 

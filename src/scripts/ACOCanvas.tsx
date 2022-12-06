@@ -1,5 +1,5 @@
-import { Box } from '@mui/material';
-import { useCallback, useContext, useEffect, useRef } from 'react';
+import { Box, Button } from '@mui/material';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { AcoContext } from './ACOContext';
 
 function ACOCanvas({ autoSizeUpdate = true }) {
@@ -11,7 +11,7 @@ function ACOCanvas({ autoSizeUpdate = true }) {
         if (!autoSizeUpdate || !canvasContainerRef.current) return;
         if (!acoContext.controllers) return;
         let containerRect = canvasContainerRef.current.getBoundingClientRect();
-        
+
         let fixedWidth = containerRect.width * window.devicePixelRatio;
         // let user decide the height...
         // acoContext.controllers.acoArtist.resize({ width: fixedWidth }, acoContext.config.pixelRatio);
@@ -44,8 +44,55 @@ function ACOCanvas({ autoSizeUpdate = true }) {
         }
     }, [canvasContainerRef, acoContext, resize]);
 
+    // 下面是拖拽动作
+    const [dragging, setDragging] = useState(false);
+    const [mouseBeginY, setMouseBeginY] = useState(-1);
+    const [canvasBeginHeight, setCanvasBeginHeight] = useState(-1);
 
-    return <Box ref={canvasContainerRef}>
+    const startDragging = useCallback((e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        if (!canvasContainerRef.current) return;
+        setDragging(true);
+        setMouseBeginY(e.clientY);
+
+        let rect = canvasContainerRef.current.getBoundingClientRect();
+        setCanvasBeginHeight(rect.height);
+    }, [canvasContainerRef]);
+    const endDragging = useCallback(() => {
+        setDragging(false);
+        setMouseBeginY(-1);
+    }, []);
+
+    const handleMouseMove = useCallback((e: MouseEvent) => {
+        if (!dragging) return;
+        if (!canvasContainerRef.current || mouseBeginY < 0 || canvasBeginHeight < 0) return;
+        let deltaY = e.clientY - mouseBeginY;
+        acoContext.set('canvasHeight', (canvasBeginHeight + deltaY) * acoContext.config.pixelRatio);
+        // console.log(`Height: ${canvasBeginHeight} + ${deltaY} (delta: clientY ${e.clientY} mouseBeginY ${mouseBeginY})`);
+    }, [dragging, canvasContainerRef, mouseBeginY, canvasBeginHeight, acoContext.set, acoContext.config.pixelRatio]);
+
+    useEffect(() => {
+        if (dragging) {
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', endDragging);
+            return () => {
+                document.removeEventListener('mousemove', handleMouseMove);
+                document.removeEventListener('mouseup', endDragging);
+            };
+        }
+    }, [dragging, handleMouseMove, endDragging]);
+
+
+    return <Box>
+        <Box ref={canvasContainerRef} />
+
+        <Box py={2}>
+            <Button fullWidth size="small"
+                onMouseDown={startDragging}
+                variant="contained"
+                children="⇳ 调整高度 ⇳" sx={{
+                    cursor: 'ns-resize'
+                }} />
+        </Box>
 
     </Box>;
 }

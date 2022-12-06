@@ -2,6 +2,7 @@ class CanvasMain {
     elemtRef: HTMLCanvasElement;
     containerRef: HTMLElement | null;
     size: { height: number; width: number; };
+    /** 决定线条和点的缩放比 */
     devicePixelRatio: number;
     canvas2D: CanvasRenderingContext2D;
     canvasPosition: DOMRect;

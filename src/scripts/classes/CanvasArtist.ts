@@ -27,7 +27,7 @@ class CanvasArtist {
         canvasMain.clickHook = this.click.bind(this);
     };
 
-    resize(size: Partial<{ width: number; height: number; }>, windowPixelDeviceRatio = 1) {
+    resize(size: Partial<{ width: number; height: number; }>, windowPixelDeviceRatio?: number) {
         const _size = {
             ...this.canvasMain.size,
             ...size,
@@ -41,10 +41,10 @@ class CanvasArtist {
         const cities = this.ac.graph.cities;
         let e = this.canvasMain.mousePosition;
 
-        // 忽略小于 30px 距离的的新建点操作
+        // 忽略小于 25px 距离的的新建点操作
         for (const city of cities) {
             let diff = Math.abs(city.x - e.x) + Math.abs(city.y - e.y);
-            if (diff < 30 * this.canvasMain.devicePixelRatio) {
+            if (diff < 25 * this.canvasMain.devicePixelRatio) {
                 return;
             }
         }
@@ -131,7 +131,7 @@ class CanvasArtist {
                 edge.cityB.x, edge.cityB.y, {
                 alpha,
                 lineWidth: width,
-                color: '#0066ff'
+                color: '#009dff'
             });
         }
     };
@@ -140,7 +140,8 @@ class CanvasArtist {
         const nodes = this.ac.graph.cities;
         for (const node of nodes) {
             this.canvasMain.drawCircle(node.x, node.y, {
-                alpha: 0.8
+                alpha: 0.8,
+                radius: 5
             });
         }
     };
@@ -158,7 +159,7 @@ class CanvasArtist {
                 nextCity.x, nextCity.y,
                 {
                     alpha: 0.9,
-                    color: '#00cc66',
+                    color: '#38a13b',
                     lineWidth: 3
                 }
             );
