@@ -27,7 +27,7 @@ class CanvasArtist {
         canvasMain.clickHook = this.click.bind(this);
     };
 
-    resize(size: Partial<{ width: number; height: number; }>, windowPixelDeviceRatio?: number) {
+    resize(size: Partial<{ width: number; height: number; }>, windowPixelDeviceRatio: number = window.devicePixelRatio) {
         const _size = {
             ...this.canvasMain.size,
             ...size,

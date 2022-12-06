@@ -6,7 +6,7 @@ import CanvasMain from "./classes/CanvasMain";
 export type ACODemoConfig = ACOConfig & {
     canvasWidth: number;
     canvasHeight: number;
-    pixelRatio: number;
+    // pixelRatio: number;
     animationFramesPerIteration: number;
 };
 
@@ -26,7 +26,7 @@ export const AcoContext = createContext<{
         ...defaultACOConfig,
         canvasWidth: 720,
         canvasHeight: 640,
-        pixelRatio: 1,
+        // pixelRatio: 1,
         animationFramesPerIteration: 60,
     },
     set: () => { },
@@ -40,7 +40,7 @@ export function ACOContextProvider({ children }: { children?: React.ReactNode })
         ...defaultACOConfig,
         canvasWidth: 720,
         canvasHeight: 640,
-        pixelRatio: window.devicePixelRatio,
+        // pixelRatio: window.devicePixelRatio,
         animationFramesPerIteration: 60
     });
     const [acoControllers, setACOControllers] = useState<ACOControllers | null>(null);
@@ -80,7 +80,8 @@ export function ACOContextProvider({ children }: { children?: React.ReactNode })
             acoControllers.acoArtist.resize({
                 width: acoConfig.canvasWidth,
                 height: acoConfig.canvasHeight
-            }, acoConfig.pixelRatio);
+                // }, acoConfig.pixelRatio);
+            });
             acoControllers.ac.config(acoConfig);
         }
     }, [acoControllers, acoConfig]);

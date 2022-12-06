@@ -66,9 +66,9 @@ function ACOCanvas({ autoSizeUpdate = true }) {
         if (!dragging) return;
         if (!canvasContainerRef.current || mouseBeginY < 0 || canvasBeginHeight < 0) return;
         let deltaY = e.clientY - mouseBeginY;
-        acoContext.set('canvasHeight', (canvasBeginHeight + deltaY) * acoContext.config.pixelRatio);
+        acoContext.set('canvasHeight', (canvasBeginHeight + deltaY) * window.devicePixelRatio);
         // console.log(`Height: ${canvasBeginHeight} + ${deltaY} (delta: clientY ${e.clientY} mouseBeginY ${mouseBeginY})`);
-    }, [dragging, canvasContainerRef, mouseBeginY, canvasBeginHeight, acoContext.set, acoContext.config.pixelRatio]);
+    }, [dragging, canvasContainerRef, mouseBeginY, canvasBeginHeight, acoContext.set]);
 
     useEffect(() => {
         if (dragging) {
@@ -90,7 +90,8 @@ function ACOCanvas({ autoSizeUpdate = true }) {
                 onMouseDown={startDragging}
                 variant="contained"
                 children="⇳ 调整高度 ⇳" sx={{
-                    cursor: 'ns-resize'
+                    cursor: 'ns-resize',
+                    userSelect: 'none'
                 }} />
         </Box>
 
