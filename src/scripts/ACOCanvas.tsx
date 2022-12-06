@@ -12,14 +12,14 @@ function ACOCanvas({ autoSizeUpdate = true }) {
         if (!acoContext.controllers) return;
         let containerRect = canvasContainerRef.current.getBoundingClientRect();
 
-        let fixedWidth = containerRect.width * window.devicePixelRatio;
+        // 👇 ROUND, 解决半像素造成的缩放问题…… 参考 https://webglfundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html
+        let fixedWidth = Math.round(containerRect.width * window.devicePixelRatio);
         // let user decide the height...
         // acoContext.controllers.acoArtist.resize({ width: fixedWidth }, acoContext.config.pixelRatio);
         acoContext.set('canvasWidth', fixedWidth);
     }, [canvasContainerRef, acoContext.controllers /* , acoContext.config.pixelRatio */]);
 
     useEffect(() => {
-        // 可能会有性能问题……先不做
         resize();
         window.addEventListener('resize', resize);
 
@@ -66,7 +66,10 @@ function ACOCanvas({ autoSizeUpdate = true }) {
         if (!dragging) return;
         if (!canvasContainerRef.current || mouseBeginY < 0 || canvasBeginHeight < 0) return;
         let deltaY = e.clientY - mouseBeginY;
-        acoContext.set('canvasHeight', (canvasBeginHeight + deltaY) * window.devicePixelRatio);
+        // ignore < 100px
+        const finalHeight = canvasBeginHeight + deltaY;
+        if (finalHeight < 100) return;
+        acoContext.set('canvasHeight', finalHeight * window.devicePixelRatio);
         // console.log(`Height: ${canvasBeginHeight} + ${deltaY} (delta: clientY ${e.clientY} mouseBeginY ${mouseBeginY})`);
     }, [dragging, canvasContainerRef, mouseBeginY, canvasBeginHeight, acoContext.set]);
 
@@ -88,7 +91,7 @@ function ACOCanvas({ autoSizeUpdate = true }) {
         <Box py={2}>
             <Button fullWidth size="small"
                 onMouseDown={startDragging}
-                variant="contained"
+                // variant="contained"
                 children="⇳ 调整高度 ⇳" sx={{
                     cursor: 'ns-resize',
                     userSelect: 'none'
