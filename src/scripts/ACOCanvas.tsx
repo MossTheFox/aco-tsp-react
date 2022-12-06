@@ -49,10 +49,16 @@ function ACOCanvas({ autoSizeUpdate = true }) {
     const [mouseBeginY, setMouseBeginY] = useState(-1);
     const [canvasBeginHeight, setCanvasBeginHeight] = useState(-1);
 
-    const startDragging = useCallback((e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const startDragging = useCallback((e: React.MouseEvent<HTMLButtonElement, MouseEvent> | React.TouchEvent<HTMLButtonElement>) => {
+        let positionY = -1;
+        if ('touches' in e) {
+            positionY = e.touches[0].clientY;
+        } else {
+            positionY = e.clientY;
+        }
         if (!canvasContainerRef.current) return;
         setDragging(true);
-        setMouseBeginY(e.clientY);
+        setMouseBeginY(positionY);
 
         let rect = canvasContainerRef.current.getBoundingClientRect();
         setCanvasBeginHeight(rect.height);
@@ -62,10 +68,16 @@ function ACOCanvas({ autoSizeUpdate = true }) {
         setMouseBeginY(-1);
     }, []);
 
-    const handleMouseMove = useCallback((e: MouseEvent) => {
+    const handleMouseMove = useCallback((e: MouseEvent | TouchEvent) => {
+        let positionY = -1;
+        if ('touches' in e) {
+            positionY = e.touches[0].clientY;
+        } else {
+            positionY = e.clientY;
+        }
         if (!dragging) return;
         if (!canvasContainerRef.current || mouseBeginY < 0 || canvasBeginHeight < 0) return;
-        let deltaY = e.clientY - mouseBeginY;
+        let deltaY = positionY - mouseBeginY;
         // ignore < 100px
         let finalHeight = canvasBeginHeight + deltaY;
         if (finalHeight < 100) finalHeight = 100;
@@ -77,10 +89,16 @@ function ACOCanvas({ autoSizeUpdate = true }) {
     useEffect(() => {
         if (dragging) {
             document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('touchmove', handleMouseMove);
+
             document.addEventListener('mouseup', endDragging);
+            document.addEventListener('touchend', endDragging);
             return () => {
                 document.removeEventListener('mousemove', handleMouseMove);
+                document.removeEventListener('touchmove', handleMouseMove);
+
                 document.removeEventListener('mouseup', endDragging);
+                document.addEventListener('touchend', endDragging);
             };
         }
     }, [dragging, handleMouseMove, endDragging]);
@@ -92,10 +110,12 @@ function ACOCanvas({ autoSizeUpdate = true }) {
         <Box py={2}>
             <Button fullWidth size="small"
                 onMouseDown={startDragging}
+                onTouchStart={startDragging}
                 // variant="contained"
                 children="⇳ 调整高度 ⇳" sx={{
                     cursor: 'ns-resize',
-                    userSelect: 'none'
+                    userSelect: 'none',
+                    touchAction: 'none'
                 }} />
         </Box>
 
