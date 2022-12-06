@@ -67,9 +67,10 @@ function ACOCanvas({ autoSizeUpdate = true }) {
         if (!canvasContainerRef.current || mouseBeginY < 0 || canvasBeginHeight < 0) return;
         let deltaY = e.clientY - mouseBeginY;
         // ignore < 100px
-        const finalHeight = canvasBeginHeight + deltaY;
-        if (finalHeight < 100) return;
-        acoContext.set('canvasHeight', finalHeight * window.devicePixelRatio);
+        let finalHeight = canvasBeginHeight + deltaY;
+        if (finalHeight < 100) finalHeight = 100;
+        // 取整……
+        acoContext.set('canvasHeight', Math.floor(finalHeight * window.devicePixelRatio));
         // console.log(`Height: ${canvasBeginHeight} + ${deltaY} (delta: clientY ${e.clientY} mouseBeginY ${mouseBeginY})`);
     }, [dragging, canvasContainerRef, mouseBeginY, canvasBeginHeight, acoContext.set]);
 

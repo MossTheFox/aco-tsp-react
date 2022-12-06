@@ -15,6 +15,10 @@ class CanvasArtist {
     /** 当准备开始、或是一次迭代完成后，需要触发的 Hook */
     iterationHook: (() => void) | null;
 
+    forceStopHook: (() => void) | null;
+
+    private _paused: boolean;
+    autoGoOn: boolean;
 
     constructor(ac: AntColony, canvasMain: CanvasMain) {
         this.canvasMain = canvasMain;
@@ -23,6 +27,9 @@ class CanvasArtist {
         this.antAnimationFrames = 8;
 
         this.iterationHook = null;
+        this.forceStopHook = null;
+        this._paused = false;
+        this.autoGoOn = true;
 
         canvasMain.clickHook = this.click.bind(this);
     };
@@ -56,10 +63,13 @@ class CanvasArtist {
         // end it...
         this._animationInterval && clearInterval(this._animationInterval);
 
+        // handle ui callback
+        this.forceStopHook && this.forceStopHook();
+
         this.draw();
     };
 
-    private draw() {
+    draw() {
         this.canvasMain.clear();
         this._drawBackground();
         this._drawEdges();
@@ -191,7 +201,36 @@ class CanvasArtist {
         this.step();
     };
 
-    step() {
+    /** 暂停，返回一个包含选择是步进方法与继续进行方法的对象 */
+    pause() {
+        this._paused = true;
+        this._animationInterval && clearInterval(this._animationInterval);
+        this.draw();
+        return ({
+            step: () => this.step(),
+            goOn: () => {
+                this._paused = false;
+                this.step();
+            }
+        });
+    };
+
+    getStatus() {
+        return {
+            finished: this.ac.currentIteration >= this.ac.acoConfig.maxIterations,
+            paused: this._paused,
+            goOn: () => {
+                this._paused = false;
+                this.step();
+            },
+            currentIteration: this.ac.currentIteration,
+            maxIterations: this.ac.acoConfig.maxIterations,
+            globalBestDistance: this.ac.getGlobalBest()?.tour?.distance ?? -1,
+            currentIterationBestDistance: this.ac.getIterationBest()?.tour?.distance ?? -1,
+        };
+    };
+
+    step(repaintOnStepEnd = false) {
         // 已完成...
         if (this.ac.currentIteration >= this.ac.acoConfig.maxIterations) {
             this.draw();
@@ -201,11 +240,16 @@ class CanvasArtist {
 
         // 运行中
         this.ac.step();
-        this._animateAnts();
         this.iterationHook && this.iterationHook();
-    }
+        if (repaintOnStepEnd) {
+            this.draw();
+        }
+        if (this.autoGoOn) {
+            this._animateAnts();
+        }
+    };
 
-    _drawAnt(x: number, y: number, alpha = 0.2) {
+    _drawAnt(x: number, y: number, alpha = 0.25) {
         this.canvasMain.drawRectangle(x - 2, y - 2, 4, 4, { alpha });
     };
 
@@ -222,9 +266,12 @@ class CanvasArtist {
                 this._drawAntAnimation(ant, keyframesLength);
             }
             keyframesLength++;
-            if (keyframesLength >= this.antAnimationFrames) {
+            if (keyframesLength > this.antAnimationFrames) {
                 this._animationInterval && clearInterval(this._animationInterval);
-                this.step();
+                // 自动继续
+                if (this.autoGoOn) {
+                    this.step();
+                }
             }
         }, 16.66);
     };

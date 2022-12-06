@@ -41,7 +41,7 @@ export type ACOConfig = {
 };
 
 export const defaultACOConfig: ACOConfig = {
-    type: 'acs',
+    type: 'maxmin',
     colonySize: 30,
     alpha: 1,
     beta: 3,
