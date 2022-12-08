@@ -225,8 +225,11 @@ class CanvasArtist {
             },
             currentIteration: this.ac.currentIteration,
             maxIterations: this.ac.acoConfig.maxIterations,
+            iterationBestDistance: this.ac.getIterationBest()?.tour?.distance ?? -1,
+            iterationBestDistanceRecord: this.ac.iterationBestRecord,
             globalBestDistance: this.ac.getGlobalBest()?.tour?.distance ?? -1,
             globalBestFromIteration: this.ac.globalBestFromIteration ?? -1,
+            globalBestRefreshTime: this.ac.globalBestRefreshTime ?? -1,
             currentIterationBestDistance: this.ac.getIterationBest()?.tour?.distance ?? -1,
         };
     };

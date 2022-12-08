@@ -2,6 +2,15 @@ import { AcoContext } from './ACOContext'
 import { Box, Button, Checkbox, Container, Divider, FormControl, FormControlLabel, FormHelperText, Grid, Link, MenuItem, Select, Slider, Stack, Typography } from '@mui/material';
 import { useCallback, useContext, useEffect, useState } from 'react';
 
+const average = (...args: number[]) => {
+    let len = args.length;
+    let result = 0;
+    for (const i of args) {
+        result += i / len;
+    }
+    return result;
+};
+
 function ACOControlPanel() {
 
     const context = useContext(AcoContext);
@@ -10,6 +19,16 @@ function ACOControlPanel() {
     const toggleInputMode = useCallback(() => {
         setManuallyInput((v) => !v);
     }, []);
+
+    const [quickMode, setQuickMode] = useState(false);
+    useEffect(() => {
+        if (!context.controllers) return;
+        if (quickMode) {
+            context.controllers.acoArtist.antAnimationFrames = 0;
+        } else {
+            context.controllers.acoArtist.antAnimationFrames = 16;
+        }
+    }, [context.controllers, quickMode]);
 
     // 状态: 
     // 未开始 | 进行中 / 暂停 | 结束
@@ -26,8 +45,10 @@ function ACOControlPanel() {
         setStatusText(`迭代 ${stat.currentIteration} / ${stat.maxIterations} \n`
             + `当前迭代最优: ${stat.currentIterationBestDistance.toFixed(2)}\n`
             + `全局最优: ${stat.globalBestDistance.toFixed(2)}\n`
-            + `(第 ${stat.globalBestFromIteration} 次迭代达到最优)\n`
-        )
+            + `第 ${stat.globalBestFromIteration} 次迭代达到最优\n`
+            + `全局最优解刷新次数: ${stat.globalBestRefreshTime}\n`
+            + `每个迭代的最优值取平均: ${average(...stat.iterationBestDistanceRecord).toFixed(2)}\n`
+        );
 
         if (stat.finished) {
             setHold(false);
@@ -162,6 +183,11 @@ function ACOControlPanel() {
                 <Typography variant="body2">
                     {`宽: ${context.config.canvasWidth}px, 高 ${context.config.canvasHeight}px`}
                 </Typography>
+            </Box>
+
+            <Box>
+                <FormControlLabel sx={{ mb: -1 }} control={<Checkbox value={quickMode} onChange={(e, checked) => setQuickMode(checked)} size='small' />} label="快速模式" />
+                <FormHelperText>跳过绘制蚂蚁个体的过程</FormHelperText>
             </Box>
 
             <Divider />

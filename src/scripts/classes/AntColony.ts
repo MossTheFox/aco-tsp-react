@@ -75,6 +75,11 @@ class AntColony {
     private _globalBest: Ant | null;
     private _globalBestFromIteration: number | null;
     public get globalBestFromIteration() { return this._globalBestFromIteration; };
+    /** 记录迭代最优 */
+    public iterationBestRecord: number[];
+    /** 记录突破全局最优的次数 */
+    private _globalBestRefreshTime: number | null;
+    public get globalBestRefreshTime() { return this._globalBestRefreshTime; };
 
     constructor(acoConfig: ACOConfig) {
         this.acoConfig = acoConfig;
@@ -88,6 +93,8 @@ class AntColony {
         this._iterationBest = null;
         this._globalBest = null;
         this._globalBestFromIteration = null;
+        this.iterationBestRecord = [];
+        this._globalBestRefreshTime = null;
 
         // 召唤蚂蚁
         this._createAnts();
@@ -111,6 +118,8 @@ class AntColony {
         this._iteration = 0;
         this._globalBest = null;
         this._globalBestFromIteration = null;
+        this.iterationBestRecord = [];
+        this._globalBestRefreshTime = 0;
         this.resetAnts();
         this.setInitialPhoemore(this.acoConfig.initialPheromone);
         this.graph.resetPheromone();
@@ -153,6 +162,7 @@ class AntColony {
         // ...然后更新信息素
         this.getGlobalBest();
         this.updatePheromone();
+        this.iterationBestRecord.push(this.getIterationBest()?.tour?.distance ?? -1);
 
         this._iteration++;
     };
@@ -186,10 +196,12 @@ class AntColony {
         if (this._globalBest === null) {
             this._globalBest = bestAnt;
             this._globalBestFromIteration = this._iteration + 1;
+            this._globalBestRefreshTime = 1;
         } else {
             if (this._globalBest.tour!.distance > bestAnt.tour!.distance) {
                 this._globalBest = bestAnt;
                 this._globalBestFromIteration = this._iteration + 1;
+                this._globalBestRefreshTime!++;
             }
         }
         return this._globalBest;
