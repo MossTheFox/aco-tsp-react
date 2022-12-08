@@ -57,11 +57,15 @@ export function ACOContextProvider({ children }: { children?: React.ReactNode })
             let canvas = new CanvasMain();
             let ac = new AntColony(acoConfig);
             let canvasArtist = new CanvasArtist(ac, canvas);
-            setACOControllers({
+            const newControllers = {
                 canvasMain: canvas,
                 ac,
                 acoArtist: canvasArtist
-            });
+            };
+            // @ts-ignore
+            window.__DEBUG_CONTROLLERS = newControllers;
+
+            setACOControllers(newControllers);
         }
     }, [acoControllers, acoConfig]);
 

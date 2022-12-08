@@ -61,7 +61,7 @@ class AntColony {
     private _colony: Ant[];
     public get colony() { return this._colony; };
 
-    /** 当前迭代 */
+    /** 当前迭代 (将在进入下一次迭代之前 + 1) */
     private _iteration: number;
     public get currentIteration() { return this._iteration; };
 
@@ -73,6 +73,8 @@ class AntColony {
     private _iterationBest: Ant | null;
     /** 全局最优 */
     private _globalBest: Ant | null;
+    private _globalBestFromIteration: number | null;
+    public get globalBestFromIteration() { return this._globalBestFromIteration; };
 
     constructor(acoConfig: ACOConfig) {
         this.acoConfig = acoConfig;
@@ -85,6 +87,7 @@ class AntColony {
         this._maxPheromone = null;
         this._iterationBest = null;
         this._globalBest = null;
+        this._globalBestFromIteration = null;
 
         // 召唤蚂蚁
         this._createAnts();
@@ -107,6 +110,7 @@ class AntColony {
     reset() {
         this._iteration = 0;
         this._globalBest = null;
+        this._globalBestFromIteration = null;
         this.resetAnts();
         this.setInitialPhoemore(this.acoConfig.initialPheromone);
         this.graph.resetPheromone();
@@ -174,16 +178,18 @@ class AntColony {
     };
 
     /**
-     * 留意: 精英个体是会被保留下来的
+     * 留意: 精英个体是会被保留下来的。此函数每次迭代结束需要调用一下来保存个体。
      */
     getGlobalBest() {
         const bestAnt = this.getIterationBest();
         if (!bestAnt) return;
         if (this._globalBest === null) {
             this._globalBest = bestAnt;
+            this._globalBestFromIteration = this._iteration + 1;
         } else {
             if (this._globalBest.tour!.distance > bestAnt.tour!.distance) {
                 this._globalBest = bestAnt;
+                this._globalBestFromIteration = this._iteration + 1;
             }
         }
         return this._globalBest;

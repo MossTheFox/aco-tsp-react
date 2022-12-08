@@ -90,7 +90,7 @@ class Ant {
         /** 此变量是所有的 state, 此处就是 city */
         const cities = this._graph.cities;
 
-        /** 记录每个候选城市的权重 (即，每个个体的被选中概率) */
+        /** 记录每个候选城市的权重 (即，每个候选状态的被选中概率) */
         const cityProbabilities: Map<string, number> = new Map();
         for (const city of cities) {
             if (!this.tour?.contains(city)) {

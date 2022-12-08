@@ -26,6 +26,7 @@ function ACOControlPanel() {
         setStatusText(`迭代 ${stat.currentIteration} / ${stat.maxIterations} \n`
             + `当前迭代最优: ${stat.currentIterationBestDistance.toFixed(2)}\n`
             + `全局最优: ${stat.globalBestDistance.toFixed(2)}\n`
+            + `(第 ${stat.globalBestFromIteration} 次迭代达到最优)\n`
         )
 
         if (stat.finished) {

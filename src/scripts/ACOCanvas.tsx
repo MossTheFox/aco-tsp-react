@@ -14,6 +14,8 @@ function ACOCanvas({ autoSizeUpdate = true }) {
 
         // 👇 ROUND, 解决半像素造成的缩放问题…… 参考 https://webglfundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html
         let fixedWidth = Math.round(containerRect.width * window.devicePixelRatio);
+        // FORCE to discard half pixel... ()
+        acoContext.controllers.canvasMain.elemtRef.style.width = `${Math.round(containerRect.width * window.devicePixelRatio) / window.devicePixelRatio}px`;
         // let user decide the height...
         // acoContext.controllers.acoArtist.resize({ width: fixedWidth }, acoContext.config.pixelRatio);
         acoContext.set('canvasWidth', fixedWidth);
@@ -105,7 +107,7 @@ function ACOCanvas({ autoSizeUpdate = true }) {
 
 
     return <Box>
-        <Box ref={canvasContainerRef} />
+        <Box ref={canvasContainerRef} sx={{ overflow: 'visible' }} />
 
         <Box py={2}>
             <Button fullWidth size="small"
