@@ -9,7 +9,6 @@ function MainContainer({ children }: { children: React.ReactNode }) {
     return <Box
         sx={{
             backgroundColor: (theme) => theme.palette.mode === "dark" ? "unset" : "#faf9f6",
-            pb: "10rem",
             overflowX: 'hidden',
         }}
     >

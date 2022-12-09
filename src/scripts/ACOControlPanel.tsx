@@ -155,6 +155,31 @@ function ACOControlPanel() {
         setStatusText('已读取存储的点位信息。');
     }, [context.controllers]);
 
+    const loadCityFromClipboard = useCallback(async () => {
+        if (!context.controllers) return;
+        try {
+            let data = await navigator.clipboard.readText();
+            let items = JSON.parse(data) as ({ "_x": number; "_y": number; })[];
+            if (items && Array.isArray(items) && '_x' in items[0] && '_y' in items[0]) {
+                context.controllers.ac.graph.clear();
+                for (const i of items) {
+                    context.controllers.ac.graph.addCity(i._x, i._y);
+                }
+                context.controllers.ac.graph.createEdges();
+                context.controllers.acoArtist.draw();
+                setStatusText('已读取剪切板中的点位信息。');
+            } else {
+                throw new SyntaxError();
+            }
+        } catch (err) {
+            if (err instanceof SyntaxError) {
+                setStatusText('剪切板数据无效。\n(预期格式: JSON, Array<{ "_x": number; "_y": number; }>');
+            } else {
+                setStatusText(`读取剪切板出错, ${err}`);
+            }
+        }
+    }, [context.controllers]);
+
 
 
     return <Box>
@@ -240,6 +265,7 @@ function ACOControlPanel() {
                     <Box textAlign='center'>
                         <Button size="small" onClick={saveCityData}>保存点位信息</Button>
                         <Button size="small" onClick={loadCityData}>读取保存的点位信息</Button>
+                    <Button size="small" onClick={loadCityFromClipboard}>从剪切板导入点位信息</Button>
                     </Box>
                 </Stack>
             </Box>}
@@ -403,10 +429,8 @@ function ACOControlPanel() {
                 </FormControl>
             </Box>
 
-
-
-
         </Stack>
+
     </Box>;
 }
 
